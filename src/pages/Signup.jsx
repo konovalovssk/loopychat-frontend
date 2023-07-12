@@ -3,23 +3,30 @@ import Avatar from "@mui/material/Avatar";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import AppRegistrationOutlinedIcon from "@mui/icons-material/AppRegistrationOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
+import {ToggleButton} from "@mui/material";
 
-export const LoginPage = () => {
+export const SignupPage = () => {
     const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMessage('');
+
 
         const data = new FormData(event.currentTarget);
         const result = await login({
@@ -47,10 +54,10 @@ export const LoginPage = () => {
                 }}
             >
                 <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-                    <LockOutlinedIcon />
+                    <AppRegistrationOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Log In
+                    Sign Up
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }} >
                     <TextField
@@ -74,6 +81,21 @@ export const LoginPage = () => {
                         autoComplete="current-password"
                     />
 
+                    <ToggleButtonGroup
+                        margin="normal"
+                        color="primary"
+                        /*value={alignment}*/
+                        exclusive
+                        /*onChange={handleChange}*/
+                        aria-label="Platform"
+                        required
+                        fullWidth
+                        style={{marginBottom: "8px"}}
+                    >
+                        <ToggleButton value="MALE">Male</ToggleButton>
+                        <ToggleButton value="FEMALE">Female</ToggleButton>
+                    </ToggleButtonGroup>
+
                     {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
                     <Button
@@ -83,13 +105,6 @@ export const LoginPage = () => {
                         sx={{ mt: 3, mb: 2 }}
                     >Login In
                     </Button>
-                    <Grid container>
-                        <Grid item>
-                            <RouterLink to="/signup" className="login-signup-link">
-                                {"Don't have an account? Sign Up"}
-                            </RouterLink>
-                        </Grid>
-                    </Grid>
                 </Box>
             </Box>
         </Container>

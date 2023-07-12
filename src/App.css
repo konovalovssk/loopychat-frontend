@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.login-signup-link {
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: #1976d2;
+}

@@ -7,15 +7,15 @@ export const ProtectedLayout = () => {
     const outlet = useOutlet();
 
     if (!user) {
-        return <Navigate to="/" />;
+        return <Navigate to="/login" replace />;
     }
 
     return (
         <div>
             <AppBar
                 pages={[
-                    { label: "Settings", path: "settings" },
-                    { label: "Profile", path: "profile" }
+                    { label: "Home", path: "/" },
+                    { label: "Profile", path: "/profile" }
                 ]}
             />
             {outlet}

@@ -9,19 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export const AppBar = ({ pages }) => {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const navigate = useNavigate();
     const { user, logout } = useAuth();
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = (path) => {
-        setAnchorElNav(null);
-        if (path) {
-            navigate(path);
-        }
+    const handleOpenPage = (path) => {
+        navigate(path);
     };
 
     return (
@@ -41,7 +33,7 @@ export const AppBar = ({ pages }) => {
                         {pages?.map((page) => (
                             <Button
                                 key={page.label}
-                                onClick={() => handleCloseNavMenu(page.path)}
+                                onClick={() => handleOpenPage(page.path)}
                                 sx={{ my: 2, color: "white", display: "block" }}
                             >
                                 {page.label}

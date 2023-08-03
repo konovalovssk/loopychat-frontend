@@ -1,45 +1,78 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import AppRegistrationOutlinedIcon from "@mui/icons-material/AppRegistrationOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { Link as RouterLink } from "react-router-dom";
+import { ToggleButton } from "@mui/material";
+import { useCsrfToken } from "../hooks/useCsrfToken";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
-import {ToggleButton} from "@mui/material";
 
 export const SignupPage = () => {
-    const { login } = useAuth();
-    const [errorMessage, setErrorMessage] = useState('');
+    const { setUser } = useAuth();
+    const [getCsrfToken] = useCsrfToken();
+    const [errorMessage, setErrorMessage] = React.useState('');
+    const [gender, setGender] = React.useState('MALE');
+    const navigate = useNavigate();
 
-    const handleSubmit = async (event) => {
+    const handleSubmit2 = async (event) => {
         event.preventDefault();
         setErrorMessage('');
 
+        try {
+            const data = new FormData(event.currentTarget);
+            const csrfToken = await getCsrfToken();
+            if (!csrfToken) {
+                setErrorMessage('Cannot get csrfToken');
+                return;
+            }
 
-        const data = new FormData(event.currentTarget);
-        const result = await login({
-            username: data.get("username"),
-            password: data.get("password")
-        });
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        username: data.get("username"),
+                        password: data.get("password"),
+                        gender: data.get("gender"),
+                    }
+                ),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
 
-        //----------
-        console.log("result:", result);
-        //----------
+            const payload = await response.json();
 
-        if (result.error) {
-            setErrorMessage(result.error);
+            //---------------
+            console.log("payload:", payload);
+            console.log("response:", response);
+            //---------------
+
+            if (response.ok) {
+                setUser(payload);
+                //---------------
+                console.log("redirect_to: profile");
+                //---------------
+
+                navigate("/profile", { replace: true });
+            } else {
+                setErrorMessage(payload.message);
+            }
+        } catch (error) {
+            console.error("signup:", error);
+            setErrorMessage("Cannot signup");
+        }
+    };
+
+    const handleGenderChange = (event, selectedGender) => {
+        if (selectedGender !== null) {
+            setGender(selectedGender);
         }
     };
 
@@ -59,7 +92,7 @@ export const SignupPage = () => {
                 <Typography component="h1" variant="h5">
                     Sign Up
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }} >
+                <Box component="form" onSubmit={handleSubmit2} noValidate sx={{ mt: 1 }} >
                     <TextField
                         margin="normal"
                         required
@@ -81,12 +114,23 @@ export const SignupPage = () => {
                         autoComplete="current-password"
                     />
 
+                    <TextField
+                        id="gender"
+                        name="gender"
+                        margin="normal"
+                        required
+                        fullWidth
+                        hidden={true}
+                        value={gender}
+                    />
+
                     <ToggleButtonGroup
+
                         margin="normal"
                         color="primary"
-                        /*value={alignment}*/
+                        value={gender}
                         exclusive
-                        /*onChange={handleChange}*/
+                        onChange={handleGenderChange}
                         aria-label="Platform"
                         required
                         fullWidth
